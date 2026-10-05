@@ -63,7 +63,7 @@ function formatDays(value: number) {
     <main>
       <section class="lead" aria-labelledby="report-title">
         <div class="lead-copy">
-          <p class="eyebrow"><span class="eyebrow-line"></span> FICTIONAL QUARTERLY COHORT · 1,000 LOTS</p>
+          <p class="eyebrow"><span class="eyebrow-line"></span> QUARTERLY COHORT · ILLUSTRATIVE DATA · 1,000 LOTS</p>
           <h1 id="report-title">Castelzor reaches pharmacies <em>{{ formatDays(totalDelay) }} days later</em> than planned.</h1>
           <p class="lead-deck">The biggest single hold is a verification handoff, not a truck in transit.</p>
         </div>
@@ -73,7 +73,7 @@ function formatDays(value: number) {
           <div class="lead-figure-bottom"><span>ACTUAL, ILLUSTRATIVE</span><span>PLANNING REFERENCE</span></div>
           <div class="lead-track" aria-hidden="true"><span></span><i :style="{ left: `${(story.planningDays / currentTotal) * 100}%` }"></i></div>
         </div>
-        <p class="fictional-note"><span aria-hidden="true">i</span> Castelzor and all figures in this report are fictional and illustrative; this is not validated industry research.</p>
+        <p class="fictional-note"><span aria-hidden="true">i</span> Castelzor and these figures are fictional, illustrative scenario data; they are not validated operational or industry research.</p>
       </section>
 
       <nav class="chapter-nav" aria-label="Report chapters">
@@ -170,9 +170,9 @@ function formatDays(value: number) {
           <section id="opening" :class="['chapter', 'opening-chapter', { 'is-active': activeChapter === 0 }]" data-chapter-index="0" aria-labelledby="opening-title">
             <div class="chapter-marker"><span>THE JOURNEY</span><span>00 / 05</span></div>
             <h2 id="opening-title">From completed production to pharmacy-ready.</h2>
-            <p class="chapter-intro">The clock starts when manufacturing is complete and stops when the pharmacy marks product <strong>available for dispensing</strong>. The {{ formatDays(story.planningDays) }}-day planning reference is a simplified fictional benchmark, not a contract or a validated best-case transit time.</p>
+            <p class="chapter-intro">The clock starts when manufacturing is complete and stops when the pharmacy marks product <strong>available for dispensing</strong>. The {{ formatDays(story.planningDays) }}-day planning reference is simplified, not a contractual SLA or a validated best-case transit time.</p>
             <div class="availability-definition"><span class="definition-icon" aria-hidden="true">↳</span><p><strong>Available for dispensing</strong><br />Received, reconciled, and marked ready in the pharmacy’s operating workflow.</p></div>
-            <div class="cohort-strip"><strong>1,000</strong><span>fictional lots in one quarterly cohort</span><span class="strip-rule"></span><strong>{{ formatDays(totalDelay) }} d</strong><span>mean gap across five stages</span></div>
+            <div class="cohort-strip"><strong>1,000</strong><span>lots in one quarterly cohort</span><span class="strip-rule"></span><strong>{{ formatDays(totalDelay) }} d</strong><span>mean gap across five stages</span></div>
           </section>
 
           <section v-for="(stage, index) in stages" :id="stage.id" :key="stage.id" :class="['chapter', 'stage-chapter', { 'is-active': activeChapter === index + 1, 'is-bottleneck': stage.id === 'regional' }]" :data-chapter-index="index + 1" :aria-labelledby="`${stage.id}-title`">
@@ -232,7 +232,7 @@ function formatDays(value: number) {
 
     <footer class="report-footer">
       <div><span class="wordmark-mark" aria-hidden="true">C</span><span>CASTELZOR FLOW STUDY</span></div>
-      <p>Fictional case study. Synthetic numbers are illustrative, not validated operational or industry research.</p>
+      <p>Methods, measures, and assumptions below.</p>
       <a href="#methodology">Methodology ↓</a>
       <div id="methodology" class="footer-method">Lot-days are lots multiplied by mean incremental delay; they are not dollars saved, waste, or guaranteed sales. Delay contributions use mutually exclusive stage assignments and sum to the cohort-average 3.8-day gap. No patient outcomes or product-safety claims are made.</div>
     </footer>
