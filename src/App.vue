@@ -5,34 +5,32 @@ import { useActiveChapter } from './composables/useActiveChapter'
 
 const pilotEnabled = ref(false)
 const activeChapter = useActiveChapter()
-const stageDelays = computed(() =>
+const stageDelays = stages.map((stage) => stage.delayDays)
+const totalDelay = stageDelays.reduce((sum, delay) => sum + delay, 0)
+const currentTotal = story.planningDays + totalDelay
+const scenarioStageDelays = computed(() =>
   stages.map((stage) =>
     pilotEnabled.value && stage.id === 'regional'
       ? stage.delayDays - story.pilotAssumedReductionDays
       : stage.delayDays,
   ),
 )
-const totalDelay = computed(() => stageDelays.value.reduce((sum, delay) => sum + delay, 0))
-const currentTotal = computed(() => story.planningDays + stages.reduce((sum, stage) => sum + stage.delayDays, 0))
-const modeledTotal = computed(() => story.planningDays + totalDelay.value)
-const chartMaximum = computed(() => Math.max(...stageDelays.value))
-const largestStageIndex = computed(() => stageDelays.value.indexOf(chartMaximum.value))
-const chartFootnote = computed(() =>
-  pilotEnabled.value
-    ? `${stages[largestStageIndex.value].shortLabel} is the largest remaining modeled contribution at ${formatDays(chartMaximum.value)} days. Regional verification is modeled at ${formatDays(stageDelays.value[3])} days.`
-    : `Regional distributor contributes ${formatDays(stageDelays.value[3])} days, about ${Math.round((stageDelays.value[3] / totalDelay.value) * 100)}% of the ${formatDays(totalDelay.value)}-day gap. Other stages still account for ${formatDays(totalDelay.value - stageDelays.value[3])} days.`,
-)
+const scenarioTotalDelay = computed(() => scenarioStageDelays.value.reduce((sum, delay) => sum + delay, 0))
+const modeledTotal = computed(() => story.planningDays + scenarioTotalDelay.value)
+const chartMaximum = Math.max(...stageDelays)
+const largestStageIndex = stageDelays.indexOf(chartMaximum)
+const chartFootnote = `Regional distributor contributes ${formatDays(stageDelays[3])} days, about ${Math.round((stageDelays[3] / totalDelay) * 100)}% of the ${formatDays(totalDelay)}-day gap. Other stages still account for ${formatDays(totalDelay - stageDelays[3])} days.`
 const activeStageIndex = computed(() =>
   Math.min(Math.max(activeChapter.value - 1, 0), stages.length - 1),
 )
 const activeStage = computed(() => stages[activeStageIndex.value])
 const activeContribution = computed(() =>
   activeChapter.value > 0 && activeChapter.value <= stages.length
-    ? stageDelays.value[activeChapter.value - 1]
+    ? stageDelays[activeChapter.value - 1]
     : 0,
 )
 const cumulativeDelay = computed(() =>
-  stageDelays.value
+  stageDelays
     .slice(0, Math.min(activeChapter.value, stages.length))
     .reduce((sum, delay) => sum + delay, 0),
 )
@@ -209,8 +207,8 @@ function formatDays(value: number) {
               <p class="scenario-assumption">Illustrative modeled scenario: assumes an average {{ story.pilotAssumedReductionDays.toFixed(1) }} day removed from the distributor’s {{ stages[3].delayDays.toFixed(1) }}-day contribution. Not an observed effect or promise.</p>
               <div class="scenario-metrics" aria-live="polite" aria-atomic="true">
                 <div><span>END-TO-END MEAN</span><strong>{{ formatDays(modeledTotal) }} <small>days</small></strong><em>{{ pilotEnabled ? `−${story.pilotAssumedReductionDays.toFixed(1)} day modeled` : 'current illustrative cohort' }}</em></div>
-                <div><span>DISTRIBUTOR CONTRIBUTION</span><strong>{{ formatDays(stageDelays[3]) }} <small>days</small></strong><em>{{ pilotEnabled ? `−${story.pilotAssumedReductionDays.toFixed(1)} day assumed` : 'largest single hold' }}</em></div>
-                <div><span>GAP VS. PLANNING</span><strong>{{ formatDays(totalDelay) }} <small>days</small></strong><em>planning reference: 3.0 days</em></div>
+                <div><span>DISTRIBUTOR CONTRIBUTION</span><strong>{{ formatDays(scenarioStageDelays[3]) }} <small>days</small></strong><em>{{ pilotEnabled ? `−${story.pilotAssumedReductionDays.toFixed(1)} day assumed` : 'largest single hold' }}</em></div>
+                <div><span>GAP VS. PLANNING</span><strong>{{ formatDays(scenarioTotalDelay) }} <small>days</small></strong><em>planning reference: 3.0 days</em></div>
               </div>
               <div class="scenario-rail" aria-hidden="true"><span :style="{ width: `${(modeledTotal / currentTotal) * 100}%` }"></span></div>
               <div class="rail-labels"><span>0 days</span><span>planning ref. {{ formatDays(story.planningDays) }}</span><span>current {{ formatDays(currentTotal) }}</span></div>
